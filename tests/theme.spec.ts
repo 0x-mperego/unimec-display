@@ -30,9 +30,9 @@ test.describe("Theme Switching", () => {
     await page.getByRole("button", { name: "Toggle theme" }).click();
 
     // Dropdown menu should appear with theme options
-    await expect(page.getByRole("menuitem", { name: "Light" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Dark" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "System" })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Chiaro" })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Scuro" })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: "Sistema" })).toBeVisible();
   });
 
   test("should apply theme changes", async ({ page }) => {
@@ -40,7 +40,7 @@ test.describe("Theme Switching", () => {
 
     // Open theme menu and select dark mode
     await page.getByRole("button", { name: "Toggle theme" }).click();
-    await page.getByRole("menuitem", { name: "Dark" }).click();
+    await page.getByRole("menuitem", { name: "Scuro" }).click();
 
     // Wait for theme to apply
     await page.waitForTimeout(100);
@@ -55,7 +55,7 @@ test.describe("Theme Switching", () => {
 
     // Set dark theme
     await page.getByRole("button", { name: "Toggle theme" }).click();
-    await page.getByRole("menuitem", { name: "Dark" }).click();
+    await page.getByRole("menuitem", { name: "Scuro" }).click();
     await page.waitForTimeout(100);
 
     // Reload page

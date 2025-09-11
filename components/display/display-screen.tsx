@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Content } from "@/lib/supabase/client";
-import { ConnectionStatus } from "./connection-status";
 import { ContentRenderer } from "./content-renderer";
 
 export function DisplayScreen() {
@@ -10,7 +9,6 @@ export function DisplayScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isConnected, setIsConnected] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [fadeClass, setFadeClass] = useState("opacity-100");
 
   // Define loadContents first
   const loadContents = useCallback(async () => {
@@ -80,14 +78,8 @@ export function DisplayScreen() {
     const duration = currentContent.duration * 1000; // Convert to milliseconds
 
     const timer = setTimeout(() => {
-      // Fade out
-      setFadeClass("opacity-0");
-
-      // After fade out, change content and fade in
-      setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % contents.length);
-        setFadeClass("opacity-100");
-      }, 300); // 300ms fade duration
+      const newIndex = (currentIndex + 1) % contents.length;
+      setCurrentIndex(newIndex);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -111,13 +103,16 @@ export function DisplayScreen() {
   // Listen for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isFs = !!document.fullscreenElement;
+      setIsFullscreen(isFs);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
+    return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
+
 
   // Auto-reconnect logic
   useEffect(() => {
@@ -134,35 +129,18 @@ export function DisplayScreen() {
 
   return (
     <div
-      className="relative min-h-screen cursor-pointer overflow-hidden bg-black text-white"
+      className={`relative min-h-screen overflow-hidden bg-black text-white ${
+        isFullscreen ? "cursor-none" : "cursor-pointer"
+      }`}
       onClick={toggleFullscreen}
     >
-      {/* Connection Status */}
-      <ConnectionStatus isConnected={isConnected} />
-
       {/* Content Display */}
-      <div
-        className={`h-screen w-full transition-opacity duration-300 ease-in-out ${fadeClass}`}
-      >
-        {contents.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center">
-              <h1 className="mb-4 font-bold text-4xl">Display Manager</h1>
-              <p className="text-gray-400 text-xl">
-                {isConnected
-                  ? "Nessun contenuto da visualizzare"
-                  : "Connessione in corso..."}
-              </p>
-              {!isConnected && (
-                <div className="mt-4">
-                  <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                </div>
-              )}
-            </div>
+      <div className="relative h-screen w-full overflow-hidden">
+        {contents.length > 0 && currentContent && (
+          <div className="absolute inset-0">
+            <ContentRenderer content={currentContent} />
           </div>
-        ) : currentContent ? (
-          <ContentRenderer content={currentContent} />
-        ) : null}
+        )}
       </div>
 
       {/* Fullscreen hint */}

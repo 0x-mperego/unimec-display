@@ -10,18 +10,15 @@ test.describe("Display Screen", () => {
     await expect(page.locator(".text-white")).toBeVisible();
   });
 
-  test("should show default message when no content", async ({ page }) => {
+  test("should show empty display when no content", async ({ page }) => {
     await page.goto("/display");
 
     // Wait for potential content to load
     await page.waitForTimeout(2000);
 
-    // Should show default message or content
-    const hasContent =
-      (await page
-        .locator("text=/Display Manager|MESSAGGIO DI PROVA/")
-        .count()) > 0;
-    expect(hasContent).toBe(true);
+    // Should show empty black screen (no content)
+    await expect(page.locator(".bg-black")).toBeVisible();
+    await expect(page.locator(".text-white")).toBeVisible();
   });
 
   test("should display content rotation indicator", async ({ page }) => {

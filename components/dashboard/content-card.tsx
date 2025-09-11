@@ -39,9 +39,10 @@ type ContentCardProps = {
   content: Content;
   onUpdate: (content: Content) => void;
   onDelete: (id: string) => void;
+  onAdd?: (content: Content) => void;
 };
 
-export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
+export function ContentCard({ content, onUpdate, onDelete, onAdd }: ContentCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDurationSlider, setShowDurationSlider] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +60,7 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
       if (response.ok) {
         onDelete(content.id);
       } else {
-        toast.error("Failed to delete content");
+        toast.error("Errore nell'eliminazione del contenuto");
       }
     } catch (_error) {
       toast.error("Failed to delete content");
@@ -86,10 +87,14 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
 
       if (response.ok) {
         const newContent = await response.json();
-        onUpdate(newContent); // This will trigger a reload
-        toast.success("Content duplicated");
+        if (onAdd) {
+          onAdd(newContent);
+        } else {
+          // Fallback: force page reload
+          window.location.reload();
+        }
       } else {
-        toast.error("Failed to duplicate content");
+        toast.error("Errore nella duplicazione del contenuto");
       }
     } catch (_error) {
       toast.error("Failed to duplicate content");
@@ -112,9 +117,9 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
       if (response.ok) {
         const updatedContent = await response.json();
         onUpdate(updatedContent);
-        toast.success("Content reordered");
+        toast.success("Contenuto riordinato");
       } else {
-        toast.error("Failed to reorder content");
+        toast.error("Errore nel riordinamento del contenuto");
       }
     } catch (_error) {
       toast.error("Failed to reorder content");
@@ -138,9 +143,9 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
         const updatedContent = await response.json();
         onUpdate(updatedContent);
         setShowDurationSlider(false);
-        toast.success("Duration updated");
+        toast.success("Durata aggiornata");
       } else {
-        toast.error("Failed to update duration");
+        toast.error("Errore nell'aggiornamento della durata");
       }
     } catch (_error) {
       toast.error("Failed to update duration");
@@ -159,7 +164,7 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
                 <ImageIcon className="h-4 w-4 text-muted-foreground" />
               )}
               {isText && <Type className="h-4 w-4 text-muted-foreground" />}
-              <Badge variant="secondary">{isImage ? "Image" : "Text"}</Badge>
+              <Badge variant="secondary">{isImage ? "Immagine" : "Testo"}</Badge>
             </div>
 
             <DropdownMenu>
@@ -171,22 +176,22 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleDuplicate}>
                   <Copy className="mr-2 h-4 w-4" />
-                  Duplicate
+                  Duplica
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleReorder("up")}>
                   <ChevronUp className="mr-2 h-4 w-4" />
-                  Move Up
+                  Sposta Su
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleReorder("down")}>
                   <ChevronDown className="mr-2 h-4 w-4" />
-                  Move Down
+                  Sposta Giù
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  Elimina
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -198,7 +203,7 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
           <div className="relative mb-4 aspect-video overflow-hidden rounded-lg bg-muted">
             {isImage && content.data.url ? (
               <Image
-                alt="Content preview"
+                alt="Anteprima contenuto"
                 className="object-cover"
                 fill
                 src={content.data.url}
@@ -215,12 +220,12 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
                 }}
               >
                 <span className="line-clamp-4 text-center">
-                  {content.data.text || "No text"}
+                  {content.data.text || "Nessun testo"}
                 </span>
               </div>
             ) : (
               <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                <span className="text-sm">No preview available</span>
+                <span className="text-sm">Anteprima non disponibile</span>
               </div>
             )}
           </div>
@@ -258,16 +263,16 @@ export function ContentCard({ content, onUpdate, onDelete }: ContentCardProps) {
       <AlertDialog onOpenChange={setShowDeleteDialog} open={showDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Content</AlertDialogTitle>
+            <AlertDialogTitle>Elimina Contenuto</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this content? This action cannot
-              be undone.
+              Sei sicuro di voler eliminare questo contenuto? Questa azione non può
+              essere annullata.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
             <AlertDialogAction disabled={isLoading} onClick={handleDelete}>
-              {isLoading ? "Deleting..." : "Delete"}
+              {isLoading ? "Eliminazione..." : "Elimina"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

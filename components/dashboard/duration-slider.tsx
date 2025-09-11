@@ -40,12 +40,12 @@ export function DurationSlider({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Set Duration</DialogTitle>
+          <DialogTitle>Imposta Durata</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Duration: {duration[0]} seconds</Label>
+            <Label>Durata: {duration[0]} secondi</Label>
             <Slider
               className="w-full"
               max={60}
@@ -63,9 +63,9 @@ export function DurationSlider({
 
         <DialogFooter>
           <Button onClick={handleCancel} variant="outline">
-            Cancel
+            Annulla
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>Salva</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

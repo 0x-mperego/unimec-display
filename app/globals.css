@@ -208,3 +208,13 @@
     letter-spacing: var(--tracking-normal);
   }
 }
+
+/* Hide cursor in fullscreen */
+.cursor-none {
+  cursor: none !important;
+}
+
+.cursor-none * {
+  cursor: none !important;
+}
+

@@ -71,7 +71,12 @@ export function Dashboard() {
       [...prev, newContent].sort((a, b) => a.order_index - b.order_index)
     );
     setIsAddDialogOpen(false);
-    toast.success("Contenuto aggiunto con successo");
+    // Only show toast if dialog is open (new content), not for duplicates
+    if (isAddDialogOpen) {
+      toast.success("Contenuto aggiunto con successo");
+    } else {
+      toast.success("Contenuto duplicato con successo");
+    }
   }
 
   function handleContentUpdated(updatedContent: Content) {
@@ -82,7 +87,7 @@ export function Dashboard() {
         )
         .sort((a, b) => a.order_index - b.order_index)
     );
-    toast.success("Contenuto aggiornato con successo");
+    // Don't show toast here, the specific action will show its own toast
   }
 
   function handleContentDeleted(deletedId: string) {
@@ -192,6 +197,7 @@ export function Dashboard() {
                   <ContentCard
                     content={content}
                     key={content.id}
+                    onAdd={handleContentAdded}
                     onDelete={handleContentDeleted}
                     onUpdate={handleContentUpdated}
                   />
